@@ -32,7 +32,7 @@ namespace KOGRankCalc
         /// <param name="placing"></param>
         public Result Add(string idCode, long contestRound, double point, long placing)
         {
-            Result result = new Result(idCode, contestRound, point, placing);
+            var result = new Result(idCode, contestRound, point, placing);
             results.Add(result);
             return result;
         }

@@ -87,11 +87,11 @@ namespace KOGRankCalc
         }
 
         //データバリデーション
-        private bool Validation(string[] csv_data, int dataCount)
+        private bool Validation(string[] csv_data)
         {
-            if (csv_data.GetLength(0) != dataCount)
+            if (csv_data.GetLength(0) != (int)csv.count)
             {
-                throw new EngineException("データ数が不正です。<" + dataCount + 1 + ">");
+                throw new EngineException("データ数が不正です。<" + (int)csv.count + 1 + ">");
             }
 
             return true;
@@ -104,12 +104,12 @@ namespace KOGRankCalc
         }
 
         //CSVの各行を読み込んで、List<string>に格納
-        private List<string> ReadCSVLines(string path, string encoding = "SHIFT-JIS")
+        private List<string> ReadCSVLines(string path, string encoding)
         {
             var strRet = new List<string>();
             using (var reader = new StreamReader(path, System.Text.Encoding.GetEncoding(encoding)))
             {
-                String lin = "";
+                String lin = string.Empty;
                 do
                 {
                     lin = reader.ReadLine();
@@ -140,7 +140,7 @@ namespace KOGRankCalc
             foreach (string eachLine in csvLines)
             {
                 var csvParams = ParseCsvLine(eachLine);
-                Validation(csvParams, (int)csv.count);
+                Validation(csvParams);
                 Add(contestRound, csvParams);
             }
         }
@@ -152,22 +152,22 @@ namespace KOGRankCalc
         public string ExportCSV(long roundCnt)
         {
             //出力バッファ
-            var output = new StringBuilder();
+            var output = string.Empty;
 
-            var title_row = false;
+            var firstLine = true;
             foreach (var rank in resultService.GetRanks())
             {
                 //タイトル行描画
-                if (false == title_row)
+                if (firstLine)
                 {
-                    output.Append(GetTitle(rank, roundCnt));
-                    title_row = true;
+                    output = GetTitle(rank, roundCnt);
+                    firstLine = false;
                 }
                 //リザルト描画
-                output.Append(GetRankData(rank, roundCnt));
+                output += GetRankData(rank, roundCnt);
             }
 
-            return output.ToString();
+            return output;
         }
 
         /// <summary>
