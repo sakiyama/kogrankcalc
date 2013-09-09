@@ -1,7 +1,7 @@
 ﻿
 namespace KOGRankCalc
 {
-    class Participant : Base
+    class Participant
     {
         public string JpName { get; set; }
         public string EnName { get; set; }

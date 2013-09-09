@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KOGRankCalc
 {
-    class Rank : Base
+    class Rank
     {
         public string IdCode { get; set; }
         public long Ranking { get; set; }

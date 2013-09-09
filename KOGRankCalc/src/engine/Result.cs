@@ -1,7 +1,7 @@
 ﻿
 namespace KOGRankCalc
 {
-    class Result : Base
+    class Result
     {
         public long contestRound { get; set; }
         public double point { get; set; }

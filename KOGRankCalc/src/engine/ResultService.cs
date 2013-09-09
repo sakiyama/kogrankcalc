@@ -4,7 +4,7 @@ using System;
 
 namespace KOGRankCalc
 {
-    class ResultService : Base
+    class ResultService
     {
         List<Result> results = new List<Result>();
 

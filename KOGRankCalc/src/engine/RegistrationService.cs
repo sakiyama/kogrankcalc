@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace KOGRankCalc
 {
-    class RegistrationService : Base
+    class RegistrationService
     {
         /// <summary>
         /// For Singleton
@@ -91,8 +91,7 @@ namespace KOGRankCalc
         {
             if (csv_data.GetLength(0) != dataCount)
             {
-                ErrMsg = "データ数が不正です。<" + dataCount + 1 + ">";
-                throw new EngineException(ErrMsg);
+                throw new EngineException("データ数が不正です。<" + dataCount + 1 + ">");
             }
 
             return true;
@@ -148,8 +147,7 @@ namespace KOGRankCalc
 
             if (!System.IO.File.Exists(path))
             {
-                ErrMsg = "ファイルが見つかりません<" + path + ">";
-                throw new EngineException(ErrMsg);
+                throw new EngineException("ファイルが見つかりません<" + path + ">");
             }
 
             csvLines = ReadCSVLines(path, encoding);

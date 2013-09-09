@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace KOGRankCalc
 {
-    class ParticipantService : Base
+    class ParticipantService
     {
         //ユーザー
         List<Participant> participants = new List<Participant>();
@@ -43,8 +43,8 @@ namespace KOGRankCalc
         public bool IsExist(string jpName, string idCode)
         {
             int count = (from x in participants
-                      where x.JpName == jpName && x.IdCode == idCode
-                      select x.IdCode).Count();
+                         where x.JpName == jpName && x.IdCode == idCode
+                         select x.IdCode).Count();
 
             //該当ラウンドのリザルトがあったらスキップ
             return (0 == count) ? false : true;
@@ -65,16 +65,14 @@ namespace KOGRankCalc
             pret = participants.Find(x => x.JpName == jpName && x.IdCode != idCode);
             if (null != pret)
             {
-                ErrMsg = "同名でIDが異なります => 既存データ<" + pret.ToString() + "> 検索データ<" + idCode + ">";
-                throw new EngineException(ErrMsg);
+                throw new EngineException("同名でIDが異なります => 既存データ<" + pret.ToString() + "> 検索データ<" + idCode + ">");
             }
 
             //違う名前なのに、IDが同じ場合もエラー
             pret = participants.Find(x => x.JpName != jpName && x.IdCode == idCode);
             if (null != pret)
             {
-                ErrMsg = "違う名前で、IDが同じです => " + pret.ToString() + "> 検索データ<" + jpName + ">";
-                throw new EngineException(ErrMsg);
+                throw new EngineException("違う名前で、IDが同じです => " + pret.ToString() + "> 検索データ<" + jpName + ">");
             }
 
             return new Participant(jpName, enName, idCode);
@@ -93,8 +91,7 @@ namespace KOGRankCalc
             Participant pret = participants.Single(x => x.IdCode == idCode);
             if (null == pret)
             {
-                ErrMsg = "データが見つかりません => " + pret.ToString();
-                throw new EngineException(ErrMsg);
+                throw new EngineException("データが見つかりません => " + pret.ToString());
             }
             return pret;
         }
