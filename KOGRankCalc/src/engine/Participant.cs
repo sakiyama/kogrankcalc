@@ -8,10 +8,6 @@ namespace KOGRankCalc
         public ResultService resultService;
         public string IdCode { get; set; }
 
-        public Participant()
-        {
-        }
-
         public Participant(string jpName, string enName, string idCode)
         {
             this.JpName = jpName;

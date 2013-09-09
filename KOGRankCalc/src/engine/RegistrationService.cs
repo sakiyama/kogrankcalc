@@ -21,7 +21,7 @@ namespace KOGRankCalc
         /// </summary>
         static private string DELIMITER = @",";
 
-        private ParticipantService participantService = new ParticipantService();
+        private Dictionary<string, Participant> paticipants = new Dictionary<string, Participant>();
         private ResultService resultService = new ResultService();
 
         /// <summary>
@@ -40,15 +40,21 @@ namespace KOGRankCalc
         {
             try
             {
-                if (false == participantService.IsExist(
-                    csvline_strings[(int)csv.jpName],
-                    csvline_strings[(int)csv.idCode]))
+                if (paticipants.ContainsKey(csvline_strings[(int)csv.idCode]))
                 {
-                    //存在していなければ参加者を登録
-                    participantService.Add(
-                        csvline_strings[(int)csv.jpName],
+                    var target = paticipants[csvline_strings[(int)csv.idCode]];
+                    if (target.JpName != csvline_strings[(int)csv.jpName])
+                    {
+                        // 違う名前で、IDが同じですが無い
+                        throw new EngineException(@"IDが同じで名前が違う人がいます。");
+                    }
+                }
+                else
+                {
+                    var newOne = new Participant(csvline_strings[(int)csv.jpName],
                         csvline_strings[(int)csv.enName],
                         csvline_strings[(int)csv.idCode]);
+                    paticipants.Add(csvline_strings[(int)csv.idCode], newOne);
                 }
 
                 //リザルトを登録
@@ -157,7 +163,7 @@ namespace KOGRankCalc
         /// <returns></returns>
         public string GetRankData(Rank rank, long roundCnt)
         {
-            var participant = participantService.getParticipant(rank.IdCode);
+            var participant = paticipants[rank.IdCode];
 
             var items = new List<string>();
             items.Add(rank.Ranking.ToString());
