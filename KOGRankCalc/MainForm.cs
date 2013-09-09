@@ -14,8 +14,6 @@ namespace KOGRankCalc
     {
         private BindingSource bindingSource1 = new BindingSource();
 
-        public const string OUTPUT_CSV_ENCODING = "shift_jis";
-
         public MainForm()
         {
             InitializeComponent();
@@ -129,19 +127,16 @@ namespace KOGRankCalc
                 return;
             }
 
-            var registrationService = new RegistrationService();
+            var ranking = new Ranking();
             try
             {
                 //全結果データ読み込み
                 foreach (FileNameDataSet row in fileNameDataSetBindingSource.List)
                 {
-                    registrationService.ImportCSV(row.contestRound, row.fileFullPath);
+                    ranking.Import(row.fileFullPath);
                 }
 
-                var outData = registrationService.ExportCSV(fileNameDataSetBindingSource.List.Count);
-
-                //CSVファイルにデータを出力
-                OutputData(outData, FileNameTxtBox.Text);
+                ranking.Export(FileNameTxtBox.Text);
 
             }
             catch (EngineException ex)
@@ -200,30 +195,6 @@ namespace KOGRankCalc
                 return sfd.FileName;
             }
             return null;
-        }
-
-        /// <summary>
-        /// データをファイルに書き込む
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="filePath"></param>
-        public void OutputData(string data, string filePath)
-        {
-            try
-            {
-                using (var writer = new System.IO.StreamWriter(
-                    filePath,
-                    false,
-                    System.Text.Encoding.GetEncoding(OUTPUT_CSV_ENCODING)))
-                {
-                    writer.Write(data);
-                    MessageBox.Show("ファイル出力終了しました。", "メッセージ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "例外", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
         }
 
         /// <summary>
