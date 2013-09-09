@@ -9,11 +9,6 @@ namespace KOGRankCalc
     class RegistrationService
     {
         /// <summary>
-        /// For Singleton
-        /// </summary>
-        private static RegistrationService instance = new RegistrationService();
-
-        /// <summary>
         /// CSVデータindex定義
         /// </summary>
         private enum csv
@@ -29,26 +24,11 @@ namespace KOGRankCalc
         private ParticipantService participantService = new ParticipantService();
         private ResultService resultService = new ResultService();
 
-        public static RegistrationService getInstance()
-        {
-            return instance;
-        }
-
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        private RegistrationService()
+        public RegistrationService()
         {
-        }
-
-        /// <summary>
-        /// データのクリア
-        /// </summary>
-        public void Clear()
-        {
-            participantService.Clear();
-            resultService.Clear();
-
         }
 
         /// <summary>

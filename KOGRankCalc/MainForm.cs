@@ -14,8 +14,6 @@ namespace KOGRankCalc
     {
         private BindingSource bindingSource1 = new BindingSource();
 
-        public const int MAINDG_COL_NUMBER = 0;
-        public const int MAINDG_COL_FILENAME = 1;
         public const string OUTPUT_CSV_ENCODING = "shift_jis";
 
         public MainForm()
@@ -131,8 +129,7 @@ namespace KOGRankCalc
                 return;
             }
 
-            var registrationService = RegistrationService.getInstance();
-            registrationService.Clear();
+            var registrationService = new RegistrationService();
             try
             {
                 //全結果データ読み込み

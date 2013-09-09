@@ -16,14 +16,6 @@ namespace KOGRankCalc
         }
 
         /// <summary>
-        /// データのクリア
-        /// </summary>
-        public void Clear()
-        {
-            results = new List<Result>();
-        }
-
-        /// <summary>
         /// リザルトを追加
         /// </summary>
         /// <param name="IdCode"></param>

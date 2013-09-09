@@ -13,14 +13,6 @@ namespace KOGRankCalc
         }
 
         /// <summary>
-        /// データのクリア
-        /// </summary>
-        public void Clear()
-        {
-            participants = new List<Participant>();
-        }
-
-        /// <summary>
         /// Participantオブジェクト生成
         /// </summary>
         /// <param name="JpName"></param>
@@ -28,7 +20,7 @@ namespace KOGRankCalc
         /// <param name="IdCode"></param>
         public Participant Add(string jpName, string enName, string idCode)
         {
-            Participant participant = Validate(jpName, enName, idCode);
+            var participant = Validate(jpName, enName, idCode);
             participants.Add(participant);
 
             return participant;
@@ -59,10 +51,8 @@ namespace KOGRankCalc
         /// <returns></returns>
         private Participant Validate(string jpName, string enName, string idCode)
         {
-            Participant pret = null;
-
             //同名なのに、IDが違う場合はエラー
-            pret = participants.Find(x => x.JpName == jpName && x.IdCode != idCode);
+            var pret = participants.Find(x => x.JpName == jpName && x.IdCode != idCode);
             if (null != pret)
             {
                 throw new EngineException("同名でIDが異なります => 既存データ<" + pret.ToString() + "> 検索データ<" + idCode + ">");
@@ -88,7 +78,7 @@ namespace KOGRankCalc
         /// <returns></returns>
         public Participant getParticipant(string idCode)
         {
-            Participant pret = participants.Single(x => x.IdCode == idCode);
+            var pret = participants.Single(x => x.IdCode == idCode);
             if (null == pret)
             {
                 throw new EngineException("データが見つかりません => " + pret.ToString());
