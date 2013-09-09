@@ -19,7 +19,7 @@ namespace KOGRankCalc
         /// <summary>
         /// CSVデータ区切り文字
         /// </summary>
-        static private string DELIMITER = @",";
+        private readonly string DELIMITER = @",";
 
         private Dictionary<string, Participant> paticipants = new Dictionary<string, Participant>();
         private ResultService resultService = new ResultService();
@@ -83,31 +83,6 @@ namespace KOGRankCalc
             return true;
         }
 
-        //１行分のデータを各文字列配列に格納
-        private string[] ParseCsvLine(string csvline_strings)
-        {
-            return csvline_strings.Split(RegistrationService.DELIMITER.ToCharArray());
-        }
-
-        //CSVの各行を読み込んで、List<string>に格納
-        private List<string> ReadCSVLines(string path, string encoding)
-        {
-            var strRet = new List<string>();
-            using (var reader = new StreamReader(path, System.Text.Encoding.GetEncoding(encoding)))
-            {
-                String lin = string.Empty;
-                do
-                {
-                    lin = reader.ReadLine();
-                    if (lin != null)
-                    {
-                        strRet.Add(lin);
-                    }
-                } while (lin != null);
-            }
-            return strRet;
-        }
-
         /// <summary>
         /// CSVをインポート
         /// </summary>
@@ -121,13 +96,15 @@ namespace KOGRankCalc
                 throw new EngineException("ファイルが見つかりません<" + path + ">");
             }
 
-            var csvLines = ReadCSVLines(path, encoding);
-
-            foreach (string eachLine in csvLines)
+            using (var reader = new StreamReader(path, Encoding.GetEncoding(encoding)))
             {
-                var csvParams = ParseCsvLine(eachLine);
-                Validation(csvParams);
-                Add(contestRound, csvParams);
+                while (reader.Peek() >= 0)
+                {
+                    var line = reader.ReadLine();
+                    var csvParams = line.Split(DELIMITER.ToCharArray());
+                    Validation(csvParams);
+                    Add(contestRound, csvParams);
+                }
             }
         }
 
@@ -146,7 +123,7 @@ namespace KOGRankCalc
                 //タイトル行描画
                 if (firstLine)
                 {
-                    output = GetTitle(rank, roundCnt);
+                    output = GetTitle(rank);
                     firstLine = false;
                 }
                 //リザルト描画
@@ -187,10 +164,10 @@ namespace KOGRankCalc
 
             items.Add(rank.Total.ToString());
 
-            return string.Join(RegistrationService.DELIMITER, items) + Environment.NewLine;
+            return string.Join(DELIMITER, items) + Environment.NewLine;
         }
 
-        public string GetTitle(Rank rank, long roundCnt)
+        public string GetTitle(Rank rank)
         {
             var items = new List<string> { "Ranking", "名前", "Name", "KOG#" };
             for (var i = 0; i < rank.Results.Count; i++)
@@ -198,7 +175,7 @@ namespace KOGRankCalc
                 items.Add("Round " + (i + 1));
             }
             items.Add("Total");
-            return string.Join(RegistrationService.DELIMITER, items) + Environment.NewLine;
+            return string.Join(DELIMITER, items) + Environment.NewLine;
         }
     }
 }
