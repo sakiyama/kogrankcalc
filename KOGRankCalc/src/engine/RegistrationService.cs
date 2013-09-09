@@ -16,16 +16,10 @@ namespace KOGRankCalc
         /// <summary>
         /// CSVデータindex定義
         /// </summary>
-        public static long CSV_DATA_RANK = 0;
-        public static long CSV_DATA_JPNAME = 1;
-        public static long CSV_DATA_ENNAME = 2;
-        public static long CSV_DATA_IDCODE = 3;
-        public static long CSV_DATA_POINT = 4;
-
-        /// <summary>
-        /// csvデータ総数
-        /// </summary>
-        public static long CSV_DATA_TOTAL = 4;
+        private enum csv
+        {
+            rank = 0, jpName, enName, idCode, point, count
+        }
 
         /// <summary>
         /// CSVデータ区切り文字
@@ -66,23 +60,23 @@ namespace KOGRankCalc
         {
             try
             {
-                if(false == participantService.IsExist(
-                    csvline_strings[RegistrationService.CSV_DATA_JPNAME],
-                    csvline_strings[RegistrationService.CSV_DATA_IDCODE]))
+                if (false == participantService.IsExist(
+                    csvline_strings[(int)csv.jpName],
+                    csvline_strings[(int)csv.idCode]))
                 {
                     //存在していなければ参加者を登録
                     participantService.Add(
-                        csvline_strings[RegistrationService.CSV_DATA_JPNAME],
-                        csvline_strings[RegistrationService.CSV_DATA_ENNAME],
-                        csvline_strings[RegistrationService.CSV_DATA_IDCODE]);
+                        csvline_strings[(int)csv.jpName],
+                        csvline_strings[(int)csv.enName],
+                        csvline_strings[(int)csv.idCode]);
                 }
 
                 //リザルトを登録
                 resultService.Add(
-                    csvline_strings[RegistrationService.CSV_DATA_IDCODE],
+                    csvline_strings[(int)csv.idCode],
                     contestRound,
-                    double.Parse(csvline_strings[RegistrationService.CSV_DATA_POINT]),
-                    long.Parse(csvline_strings[RegistrationService.CSV_DATA_RANK]));
+                    double.Parse(csvline_strings[(int)csv.point]),
+                    long.Parse(csvline_strings[(int)csv.rank]));
 
             }
             catch (EngineException)
@@ -93,7 +87,7 @@ namespace KOGRankCalc
         }
 
         //データバリデーション
-        private bool Validation(string[] csv_data, long dataCount)
+        private bool Validation(string[] csv_data, int dataCount)
         {
             if (csv_data.GetLength(0) <= dataCount)
             {
@@ -164,7 +158,7 @@ namespace KOGRankCalc
             foreach (string eachLine in csvLines)
             {
                 csvParams = ParseCsvLine(eachLine);
-                Validation(csvParams, RegistrationService.CSV_DATA_TOTAL);
+                Validation(csvParams, (int)csv.count);
                 Add(contestRound, csvParams);
             }
         }
@@ -176,9 +170,9 @@ namespace KOGRankCalc
         public string ExportCSV(long roundCnt)
         {
             //出力バッファ
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
 
-            bool title_row = false;
+            var title_row = false;
             foreach (Rank rank in resultService.GetRanks())
             {
                 //タイトル行描画
