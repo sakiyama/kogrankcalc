@@ -55,13 +55,13 @@ namespace KOGRankCalc
         {
             //コントロール内にドロップされたとき実行される
             //ドロップされたすべてのファイル名を取得する
-            string[] fileName =
+            var fileName =
                 (string[])e.Data.GetData(DataFormats.FileDrop, false);
 
-            int roundCnt = fileNameDataSetBindingSource.Count;
+            var roundCnt = fileNameDataSetBindingSource.Count;
 
             //取得したファイル数分取得
-            foreach (String fName in fileName)
+            foreach (var fName in fileName)
             {
                 var tmp = fileNameDataSetBindingSource.List.OfType<FileNameDataSet>().ToList().Find(f => f.fileFullPath == fName);
                 if (null != tmp) { continue; }
@@ -77,7 +77,7 @@ namespace KOGRankCalc
         /// <param name="e"></param>
         private void MainDataGridView_KeyDown(object sender, KeyEventArgs e)
         {
-            int rowCount = MainDataGridView.RowCount;
+            var rowCount = MainDataGridView.RowCount;
             //削除
             if (e.KeyCode == Keys.Delete && 0 < MainDataGridView.RowCount)
             {
@@ -126,15 +126,13 @@ namespace KOGRankCalc
         private void Run_Click(object sender, EventArgs e)
         {
             //処理前チェック
-            if(bool.Equals(false,ExecValidate()))
+            if (bool.Equals(false, ExecValidate()))
             {
                 return;
             }
 
-            RegistrationService registrationService = RegistrationService.getInstance();
+            var registrationService = RegistrationService.getInstance();
             registrationService.Clear();
-            string outData = null;
-
             try
             {
                 //全結果データ読み込み
@@ -143,7 +141,7 @@ namespace KOGRankCalc
                     registrationService.ImportCSV(row.contestRound, row.fileFullPath);
                 }
 
-                outData = registrationService.ExportCSV(fileNameDataSetBindingSource.List.Count);
+                var outData = registrationService.ExportCSV(fileNameDataSetBindingSource.List.Count);
 
                 //CSVファイルにデータを出力
                 OutputData(outData, FileNameTxtBox.Text);
@@ -168,28 +166,28 @@ namespace KOGRankCalc
         private string ShowFileDialog()
         {
             //SaveFileDialogクラスのインスタンスを作成
-            SaveFileDialog sfd = new SaveFileDialog();
+            var sfd = new SaveFileDialog();
 
             //はじめのファイル名を指定する
             sfd.FileName = "";
-            
+
             //はじめに表示されるフォルダを指定する
             sfd.InitialDirectory = @"C:\";
-            
+
             //[ファイルの種類]に表示される選択肢を指定する
             sfd.Filter =
                 "CSVファイル(*.csv)|*.csv|すべてのファイル(*.*)|*.*";
-            
+
             //[ファイルの種類]ではじめに
             //「CSVファイル」が選択されているようにする
             sfd.FilterIndex = 1;
-            
+
             //タイトルを設定する
             sfd.Title = "ランキング保存先のファイルを選択してください";
-            
+
             //ダイアログボックスを閉じる前に現在のディレクトリを復元するようにする
             sfd.RestoreDirectory = true;
-            
+
             //既に存在するファイル名を指定したとき警告する
             sfd.OverwritePrompt = false;
 
@@ -214,30 +212,20 @@ namespace KOGRankCalc
         /// <param name="filePath"></param>
         public void OutputData(string data, string filePath)
         {
-            StreamWriter sw = null;
             try
             {
-                //Shift JISで書き込む
-                //書き込むファイルが既に存在している場合は、上書きする
-                sw = new System.IO.StreamWriter(
+                using (var writer = new System.IO.StreamWriter(
                     filePath,
                     false,
-                    System.Text.Encoding.GetEncoding(OUTPUT_CSV_ENCODING));
-                //TextBox1.Textの内容を書き込む
-                sw.Write(data);
-                MessageBox.Show("ファイル出力終了しました。", "メッセージ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                    System.Text.Encoding.GetEncoding(OUTPUT_CSV_ENCODING)))
+                {
+                    writer.Write(data);
+                    MessageBox.Show("ファイル出力終了しました。", "メッセージ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message,"例外", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            finally
-            {
-                if (null != sw)
-                {
-                    sw.Close();
-                }
+                MessageBox.Show(ex.Message, "例外", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

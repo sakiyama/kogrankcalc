@@ -106,33 +106,20 @@ namespace KOGRankCalc
         //CSVの各行を読み込んで、List<string>に格納
         private List<string> ReadCSVLines(string path, string encoding = "SHIFT-JIS")
         {
-            StreamReader sr = null;
-            List<string> strRet = new List<string>();
-            try
+            var strRet = new List<string>();
+            using (var reader = new StreamReader(path, System.Text.Encoding.GetEncoding(encoding)))
             {
-                // CSVファイルオープン
-                sr = new StreamReader(path, System.Text.Encoding.GetEncoding(encoding));
-
                 String lin = "";
                 do
                 {
-                    lin = sr.ReadLine();
+                    lin = reader.ReadLine();
                     if (lin != null)
                     {
                         strRet.Add(lin);
                     }
                 } while (lin != null);
             }
-            finally
-            {
-                if (null != sr)
-                {
-                    // CSVファイルクローズ
-                    sr.Close();
-                }
-            }
             return strRet;
-
         }
 
         /// <summary>
@@ -143,19 +130,16 @@ namespace KOGRankCalc
         /// <param name="encoding"></param>
         public void ImportCSV(long contestRound, string path, string encoding = "SHIFT-JIS")
         {
-            List<string> csvLines = null;
-
             if (!System.IO.File.Exists(path))
             {
                 throw new EngineException("ファイルが見つかりません<" + path + ">");
             }
 
-            csvLines = ReadCSVLines(path, encoding);
+            var csvLines = ReadCSVLines(path, encoding);
 
-            string[] csvParams = null;
             foreach (string eachLine in csvLines)
             {
-                csvParams = ParseCsvLine(eachLine);
+                var csvParams = ParseCsvLine(eachLine);
                 Validation(csvParams, (int)csv.count);
                 Add(contestRound, csvParams);
             }
@@ -171,7 +155,7 @@ namespace KOGRankCalc
             var output = new StringBuilder();
 
             var title_row = false;
-            foreach (Rank rank in resultService.GetRanks())
+            foreach (var rank in resultService.GetRanks())
             {
                 //タイトル行描画
                 if (false == title_row)
@@ -193,8 +177,7 @@ namespace KOGRankCalc
         /// <returns></returns>
         public string GetRankData(Rank rank, long roundCnt)
         {
-            Participant participant = null;
-            participant = participantService.getParticipant(rank.IdCode);
+            var participant = participantService.getParticipant(rank.IdCode);
 
             var items = new List<string>();
             items.Add(rank.Ranking.ToString());
@@ -229,7 +212,6 @@ namespace KOGRankCalc
                 items.Add("Round " + (i + 1));
             }
             items.Add("Total");
-            // charなのでtoString()しなくてはならなくなります↓
             return string.Join(RegistrationService.DELIMITER, items) + Environment.NewLine;
         }
     }
