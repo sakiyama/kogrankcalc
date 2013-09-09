@@ -24,7 +24,7 @@ namespace KOGRankCalc
         /// <summary>
         /// CSVデータ区切り文字
         /// </summary>
-        static private char DELIMITER = ',';
+        static private string DELIMITER = @",";
 
         private ParticipantService participantService = new ParticipantService();
         private ResultService resultService = new ResultService();
@@ -89,7 +89,7 @@ namespace KOGRankCalc
         //データバリデーション
         private bool Validation(string[] csv_data, int dataCount)
         {
-            if (csv_data.GetLength(0) <= dataCount)
+            if (csv_data.GetLength(0) != dataCount)
             {
                 ErrMsg = "データ数が不正です。<" + dataCount + 1 + ">";
                 throw new EngineException(ErrMsg);
@@ -101,7 +101,7 @@ namespace KOGRankCalc
         //１行分のデータを各文字列配列に格納
         private string[] ParseCsvLine(string csvline_strings)
         {
-            return csvline_strings.Split(RegistrationService.DELIMITER);
+            return csvline_strings.Split(RegistrationService.DELIMITER.ToCharArray());
         }
 
         //CSVの各行を読み込んで、List<string>に格納
@@ -220,7 +220,7 @@ namespace KOGRankCalc
 
             items.Add(rank.Total.ToString());
 
-            return string.Join(RegistrationService.DELIMITER.ToString(), items) + Environment.NewLine;
+            return string.Join(RegistrationService.DELIMITER, items) + Environment.NewLine;
         }
 
         public string GetTitle(Rank rank, long roundCnt)
@@ -232,7 +232,7 @@ namespace KOGRankCalc
             }
             items.Add("Total");
             // charなのでtoString()しなくてはならなくなります↓
-            return string.Join(RegistrationService.DELIMITER.ToString(), items) + Environment.NewLine;
+            return string.Join(RegistrationService.DELIMITER, items) + Environment.NewLine;
         }
     }
 }
